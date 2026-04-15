@@ -1,0 +1,38 @@
+# Virtual environments
+venv/
+.venv/
+venv_clean/
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Data (uncomment if needed)
+# data/raw/
+# data/processed/
+
+# Models
+models/*.pkl
+models/*.joblib
+
+# Logs
+*.log
+logs.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
