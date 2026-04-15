@@ -1,5 +1,7 @@
 ﻿# Bank Customer Churn Prediction
 
+**Autores:** Juan Montes Sabogal y Nicolás Almonacid Muñoz
+
 ## El problema
 El banco pierde clientes y dinero. Con 10,127 clientes en los datos, el 16% se van (1,627 personas). Necesitamos saber quiénes van a irse antes de que lo hagan.
 
