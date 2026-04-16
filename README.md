@@ -3,9 +3,18 @@
 **Autores:** Juan Montes Sabogal y Nicolás Almonacid Muñoz
 
 ## El problema
-El banco pierde clientes y dinero. Con 10,127 clientes en los datos, el 16% se van (1,627 personas). Necesitamos saber quiénes van a irse antes de que lo hagan.
+El banco pierde clientes y dinero. Con 10,127 clientes en los datos, el 16% se va (1,627 personas). El objetivo es identificar con tiempo a quienes muestran señales de salida para actuar antes de que abandonen la entidad.
 
-El objetivo era armar un modelo que identifique clientes en riesgo. Así se pueden hacer acciones para retenerlos.
+## Estructura del proyecto
+
+- `data/raw/`: archivo original del banco.
+- `data/processed/`: datos listos para modelar y para probar.
+- `models/`: artefactos entrenados.
+- `notebooks/`: desarrollo paso a paso del análisis.
+- `src/`: scripts del proyecto y dashboard.
+- `reports/`: carpeta reservada para reportes finales si se necesitan.
+
+El flujo del trabajo sigue la secuencia de los notebooks y termina en el dashboard interactivo.
 
 ## Los datos
 Usamos `BankChurners.csv` con:
@@ -136,3 +145,24 @@ Archivos generados:
    - `02_Statistical_Analysis.ipynb`: Pruebas para confirmar diferencias
    - `03_Preprocessing.ipynb`: Limpiar y preparar
    - `04_Modeling.ipynb`: Entrenar y evaluar modelos
+
+## Cómo usar el dashboard
+
+```powershell
+streamlit run src/dashboard.py
+```
+
+El panel se organiza en estas secciones:
+
+- Sala gerencial: resumen del problema y lectura para tomar decisiones.
+- Panorama general: comportamiento de clientes activos y clientes que se fueron.
+- Cómo se hizo: explicación breve del proceso seguido en los notebooks.
+- Qué muestran los clientes: patrones, segmentos y señales de riesgo.
+- Qué tan bien funciona el modelo: comparación entre regresión logística y LightGBM.
+- Simular un cliente: evaluación de un caso concreto y lectura del riesgo estimado.
+
+Para presentarlo, conviene empezar por el problema, mostrar los patrones de comportamiento, explicar la comparación de modelos y cerrar con un caso práctico.
+
+## Resumen del panel
+
+El panel resume el problema, la exploración de datos, la comparación de modelos y la simulación de casos concretos.

@@ -1,3 +1,24 @@
+# Reporte final
+
+## Resumen
+Este proyecto analiza la deserción de clientes en una cartera de tarjetas de crédito y propone un modelo para anticipar qué clientes tienen mayor riesgo de irse. El objetivo no era solo obtener una buena métrica, sino entender qué señales del comportamiento del cliente ayudan a tomar decisiones a tiempo.
+
+## Qué se revisó
+Se trabajó con el archivo original `BankChurners.csv`, se limpiaron variables que no aportaban al análisis y se preparó una base procesada para modelado. También se revisaron diferencias entre clientes que permanecen y clientes que se retiran, con especial atención a gasto, número de transacciones e inactividad.
+
+## Hallazgos principales
+La deserción no depende tanto del perfil personal como del uso del producto. Los clientes que se van tienden a gastar menos, hacer menos transacciones y pasar más tiempo inactivos. Esa es la señal que mejor se repite en el análisis.
+
+La clase está desbalanceada, así que no bastaba con mirar exactitud. Por eso se compararon métricas como recall, precisión y AUC. En esa comparación, LightGBM quedó por encima de la regresión logística y se mantuvo como el modelo principal del proyecto.
+
+## Resultado del modelado
+El modelo principal logra detectar una parte importante de los clientes en riesgo y mantiene una lectura consistente entre entrenamiento y prueba. Eso hace que sea útil para priorizar campañas de retención, aunque todavía existen casos que no se detectan y que conviene estudiar más adelante.
+
+## Dashboard
+El dashboard reúne el resultado del trabajo en una sola vista. Está dividido en secciones para revisar el contexto, explorar el comportamiento de los clientes, comparar modelos y probar casos concretos. La idea es que el tablero sirva tanto para exponer el proyecto como para entenderlo sin depender de los notebooks.
+
+## Cierre
+En conjunto, el trabajo muestra que la deserción sí puede anticiparse con datos de comportamiento bien preparados. La parte más valiosa no es solo el modelo, sino la forma en que conecta los datos con una decisión práctica: a qué clientes conviene prestarles atención antes de que se vayan.
 # Reporte Final: Predicción de Churn en Banco de Tarjetas de Crédito
 
 ## Lo que hicimos

@@ -91,7 +91,7 @@ def save_models(lr_model, scaler, lgb_model, path='models/'):
     """
     joblib.dump(lr_model, f'{path}logistic_regression_baseline.pkl')
     joblib.dump(scaler, f'{path}scaler.pkl')
-    lgb_model.save_model(f'{path}lightgbm_model.txt')
+    joblib.dump(lgb_model, f'{path}lgbm_tuned_model.pkl')
 
     print("Modelos guardados en", path)
 
