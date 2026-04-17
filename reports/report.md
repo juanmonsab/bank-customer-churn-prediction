@@ -1,98 +1,64 @@
-# Reporte final
+# Reporte: Predicción de Churn en Banco de Tarjetas de Crédito
 
 ## Resumen
-Este proyecto analiza la deserción de clientes en una cartera de tarjetas de crédito y propone un modelo para anticipar qué clientes tienen mayor riesgo de irse. El objetivo no era solo obtener una buena métrica, sino entender qué señales del comportamiento del cliente ayudan a tomar decisiones a tiempo.
 
-## Qué se revisó
-Se trabajó con el archivo original `BankChurners.csv`, se limpiaron variables que no aportaban al análisis y se preparó una base procesada para modelado. También se revisaron diferencias entre clientes que permanecen y clientes que se retiran, con especial atención a gasto, número de transacciones e inactividad.
+Este proyecto analiza la deserción de clientes en una cartera de tarjetas de crédito y desarrolla un modelo para identificar con anticipación a los clientes con mayor riesgo de salida. La meta no fue solo mejorar una métrica, sino convertir el análisis en una herramienta útil para priorizar acciones de retención.
+
+## Qué se hizo
+
+Partimos del archivo `BankChurners.csv`, limpiamos variables redundantes y revisamos el comportamiento de los clientes desde dos frentes: análisis descriptivo y validación estadística. Después preparamos la base procesada para modelado, comparamos una regresión logística como referencia y LightGBM como modelo principal, y finalmente validamos el desempeño en entrenamiento y en holdout externo.
 
 ## Hallazgos principales
-La deserción no depende tanto del perfil personal como del uso del producto. Los clientes que se van tienden a gastar menos, hacer menos transacciones y pasar más tiempo inactivos. Esa es la señal que mejor se repite en el análisis.
 
-La clase está desbalanceada, así que no bastaba con mirar exactitud. Por eso se compararon métricas como recall, precisión y AUC. En esa comparación, LightGBM quedó por encima de la regresión logística y se mantuvo como el modelo principal del proyecto.
+La señal más consistente no está en la demografía sino en el uso real del producto. Los clientes que se van tienden a gastar menos, hacer menos transacciones y pasar más tiempo inactivos. Esa relación aparece tanto en el análisis exploratorio como en la importancia de variables del modelo.
+
+La clase está desbalanceada, así que no bastaba con mirar exactitud. Por eso se priorizaron métricas como recall, precisión, F1 y AUC. En esa comparación, LightGBM quedó por encima de la regresión logística y se mantuvo como la alternativa más sólida para el caso de negocio.
 
 ## Resultado del modelado
-El modelo principal logra detectar una parte importante de los clientes en riesgo y mantiene una lectura consistente entre entrenamiento y prueba. Eso hace que sea útil para priorizar campañas de retención, aunque todavía existen casos que no se detectan y que conviene estudiar más adelante.
 
-## Dashboard
-El dashboard reúne el resultado del trabajo en una sola vista. Está dividido en secciones para revisar el contexto, explorar el comportamiento de los clientes, comparar modelos y probar casos concretos. La idea es que el tablero sirva tanto para exponer el proyecto como para entenderlo sin depender de los notebooks.
-
-## Cierre
-En conjunto, el trabajo muestra que la deserción sí puede anticiparse con datos de comportamiento bien preparados. La parte más valiosa no es solo el modelo, sino la forma en que conecta los datos con una decisión práctica: a qué clientes conviene prestarles atención antes de que se vayan.
-# Reporte Final: Predicción de Churn en Banco de Tarjetas de Crédito
-
-## Lo que hicimos
-
-Armamos un modelo para predecir qué clientes de un banco van a dejar de usar sus tarjetas. Usamos datos de 10,127 clientes y terminamos con un modelo que acierta el 96% de las veces y detecta el 85% de los que se van.
-
-## Los datos
-
-Trabajamos con BankChurners.csv:
-- 10,127 registros
-- 23 variables (cosas como edad, ingresos, cuánto gastan, etc.)
-- El 16% de los clientes se van (churn)
-
-## Lo que encontramos
-
-1. **Hay más clientes que se quedan**: 84% vs 16% que se van. Eso hace que sea difícil predecir.
-2. **Los que se van gastan menos**: Hacen menos transacciones y mueven menos dinero.
-3. **Las variables importantes son las transaccionales**: No importa tanto si eres hombre o mujer, sino cuánto usas la tarjeta.
-
-## Cómo lo hicimos
-
-1. **Miramos los datos**: Vimos qué había, limpiamos lo que no servía.
-2. **Hicimos pruebas estadísticas**: Confirmamos que las diferencias eran reales (no por suerte).
-3. **Preparamos los datos**: Codificamos variables, eliminamos redundancias, balanceamos con SMOTE.
-4. **Probamos modelos**: Regresión logística como base, LightGBM como el bueno.
-
-## Resultados
-
-### El modelo final (LightGBM)
-- Acierta 96% de las veces
-- Detecta 85% de los que se van (mejoró 80% respecto del baseline)
-- Precisión 87%
-
-### Comparado con el baseline
-- El simple (regresión logística) solo detectaba 47% de los que se van.
-- LightGBM es mucho mejor.
+El modelo principal muestra un desempeño fuerte en el conjunto de prueba. En el holdout externo obtiene una accuracy cercana a 96.5%, precision de 89.9%, recall de 88.0% y F1 de 88.96%. La brecha entre entrenamiento y prueba indica un sobreajuste leve, pero no suficiente como para invalidar el modelo. La lectura correcta es que el modelo sí aprende patrones reales y generaliza de forma razonable.
 
 ## Variables que más pesan
 
-1. **Total_Trans_Amt**: Cuánto gasta el cliente
-2. **Total_Trans_Ct**: Cuántas transacciones hace
-3. **Months_Inactive_12_mon**: Meses sin usar la tarjeta
+1. `Total_Trans_Amt`: cuánto gasta el cliente.
+2. `Total_Trans_Ct`: cuántas transacciones hace.
+3. `Months_Inactive_12_mon`: cuántos meses permanece inactivo.
 
-El mensaje es claro: si usas poco la tarjeta, hay riesgo de que te vayas.
+El mensaje es claro: el comportamiento transaccional explica mejor la deserción que las variables puramente demográficas.
 
 ## Validación
 
-No hay overfitting. El modelo funciona igual de bien en datos nuevos que en los de entrenamiento.
+La comparación train vs test y la curva de aprendizaje apuntan en la misma dirección: el modelo mejora con más datos y la separación entre entrenamiento y validación no se dispara. Eso sugiere que el modelo aprende patrones útiles, aunque todavía conserva un margen de mejora en generalización.
+
+## Dashboard
+
+El dashboard reúne el trabajo en una sola vista. Está organizado para revisar el contexto, explorar el comportamiento de los clientes, comparar modelos y simular casos concretos. La sección de campaña mensual no calcula una nueva predicción puntual; estima el impacto comercial esperado según el tamaño de la campaña y su efectividad.
 
 ## Conclusiones
 
-1. **Funciona**: Detectamos 85% de los clientes en riesgo.
-2. **Lo que importa es el uso**: No los datos personales.
-3. **Se puede usar**: Para identificar clientes y hacer campañas de retención.
-4. **Falta mejorar**: El 15% que no detectamos necesita más trabajo.
+1. El modelo sirve para priorizar clientes con riesgo de salida.
+2. Lo que más importa es el uso del producto, no solo el perfil del cliente.
+3. Hay una señal de sobreajuste leve, pero el desempeño en prueba sigue siendo bueno.
+4. El dashboard convierte el resultado técnico en una lectura útil para negocio.
 
 ## Qué sigue
 
-1. Poner el modelo en producción para puntuar clientes nuevos.
-2. Revisar cada 3-6 meses y reentrenar.
-3. Enfocarse en clientes con baja actividad.
-4. Investigar por qué algunos se nos escapan.
+1. Ajustar el threshold según el costo real de perder un cliente vs contactar de más.
+2. Probar una regularización más fina si se quiere reducir todavía más la brecha train-test.
+3. Reentrenar periódicamente con datos nuevos.
+4. Usar el dashboard como apoyo para campañas de retención más dirigidas.
 
 ## Herramientas que usamos
 
 - Python con pandas, numpy, scikit-learn, lightgbm
-- scipy.stats para estadística
-- matplotlib y seaborn para gráficos
-- PyCaret para probar modelos rápido
+- scipy.stats para las pruebas estadísticas
+- matplotlib y seaborn para visualización
+- PyCaret para comparar y ajustar modelos rápidamente
 
-## Archivos que generamos
+## Archivos generados
 
-- Modelos: lgbm_tuned_model.pkl, logistic_regression_baseline.pkl
-- Datos listos: X_train.csv, X_test.csv, etc.
-- Predicciones: predictions.csv
+- Modelos: `lgbm_tuned_model.pkl`, `logistic_regression_baseline.pkl`
+- Datos procesados: `X_train.csv`, `X_test.csv`, `y_train.csv`, `y_test.csv`
+- Predicciones: `predictions.csv`
 
-Al final, mostramos que con datos buenos y un modelo bien elegido, se puede predecir churn y ayudar a retener clientes.
+En conjunto, el proyecto muestra que con datos bien preparados y una validación correcta sí se puede anticipar churn y tomar decisiones de retención más informadas.
