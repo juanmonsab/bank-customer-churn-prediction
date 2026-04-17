@@ -3,7 +3,7 @@
 **Autores:** Juan Montes Sabogal y Nicolás Almonacid Muñoz
 
 ## El problema
-El banco pierde clientes y dinero. Con 10,127 clientes en los datos, el 16% se va (1,627 personas). El objetivo es identificar con tiempo a quienes muestran señales de salida para actuar antes de que abandonen la entidad.
+El banco pierde clientes y eso se traduce en pérdida de ingresos. En este caso trabajamos con 10,127 clientes y vimos que el 16% se va, es decir, 1,627 personas. La idea del proyecto fue detectar esas señales de salida con tiempo para poder actuar antes de que el cliente abandone la entidad.
 
 ## Estructura del proyecto
 
@@ -14,7 +14,7 @@ El banco pierde clientes y dinero. Con 10,127 clientes en los datos, el 16% se v
 - `src/`: scripts del proyecto y dashboard.
 - `reports/`: carpeta reservada para reportes finales si se necesitan.
 
-El flujo del trabajo sigue la secuencia de los notebooks y termina en el dashboard interactivo.
+La idea del flujo es simple: primero se revisan los datos, luego se preparan, después se entrenan los modelos y al final se muestra todo en el dashboard.
 
 ## Los datos
 Usamos `BankChurners.csv` con:
@@ -26,7 +26,7 @@ Usamos `BankChurners.csv` con:
 
 **Tarjetas**: Blue 93%, Silver 5.5%, Gold 1.1%, Platinum 0.2%
 
-**Ingresos**: 
+**Ingresos**:
 - Menos de 40K: 35%
 - 40K-60K: 18%
 - 80K-120K: 15%
@@ -37,7 +37,6 @@ Usamos `BankChurners.csv` con:
 **Educación**: Graduate 31%, High School 20%, Unknown 15%, Uneducated 15%, College 10%
 
 **Estado civil**: Married 46%, Single 39%, Unknown 7%, Divorced 7%
-
 
 ### Números importantes sobre los clientes
 
@@ -53,13 +52,13 @@ Usamos `BankChurners.csv` con:
 
 **Hay variables que significan lo mismo**: Credit_Limit y Avg_Open_To_Buy están casi perfectamente correlacionadas (>0.99). Hay que eliminar una.
 
-**Los clientes que se van son diferentes**: Gastan menos dinero, hacen menos transacciones, y están más inactivos. Eso son pistas importante.
+**Los clientes que se van son diferentes**: Gastan menos dinero, hacen menos transacciones y pasan más tiempo inactivos. Esa fue una de las señales más claras.
 
 **La mayoría usa tarjeta Blue**: El 93% usa Blue. Esto reduce variedad en esa variable.
 
 ## Análisis estadístico
 
-Hicimos pruebas para confirmar que las diferencias entre clientes churn y no-churn son reales (no por suerte).
+Hicimos pruebas para confirmar que las diferencias entre clientes churn y no-churn eran reales y no simples coincidencias.
 
 **Normalidad**: Los montos gastados no siguen distribución normal. Por eso usamos Mann-Whitney U en lugar de t-test.
 
@@ -69,11 +68,11 @@ Hicimos pruebas para confirmar que las diferencias entre clientes churn y no-chu
 
 ## Preparación de datos
 
-1. **Sacamos lo que no sirve**: CLIENTNUM es solo un identificador, nada más.
-2. **Codificamos variables categóricas**: Gender con LabelEncoder, el resto (estado civil, educación, ingresos, tipo de tarjeta) con one-hot encoding.
-3. **Eliminamos redundancia**: Sacamos Avg_Open_To_Buy porque es simplemente Credit_Limit - Balance.
-4. **Dividimos los datos**: 80% para entrenar, 20% para test. Mantuvimos las proporciones de churn.
-5. **Balanceamos con SMOTE**: El conjunto de entrenamiento tenía 16% churn. SMOTE generó clientes sintéticos hasta llegar a 50%. Así el modelo entendía ambas clases.
+1. **Sacamos lo que no servía**: `CLIENTNUM` era solo un identificador.
+2. **Codificamos las variables categóricas**: `Gender` con `LabelEncoder` y el resto de categorías con one-hot encoding.
+3. **Quitamos la redundancia**: `Avg_Open_To_Buy` se eliminó porque básicamente era `Credit_Limit - Balance`.
+4. **Dividimos los datos**: 80% para entrenar y 20% para test, cuidando que la proporción de churn se mantuviera.
+5. **Balanceamos con SMOTE**: El entrenamiento venía con 16% churn, así que se generaron ejemplos sintéticos hasta llegar a 50%.
 
 Resultado final:
 - X_train: 16,408 muestras (después de SMOTE)
@@ -84,19 +83,19 @@ Resultado final:
 
 ### Regresión Logística (baseline)
 
-Algo simple para comparar. 
+Se usó como punto de comparación.
 - Accuracy: 89%
 - Recall (detecta churn): 47%
 - Precision: 62%
-- Conclusión: Solo atrapa menos de la mitad de los que se van. No es suficiente.
+- Conclusión: detecta menos de la mitad de los clientes que se van, así que no alcanza por sí solo.
 
 ### LightGBM (modelo principal)
 
-Los árboles manejan mejor las categorías y el desbalance.
+Este modelo funcionó mejor porque maneja bien las variables categóricas y el desbalance de clases.
 - Accuracy: 96%
 - Recall: 85%
 - Precision: 87%
-- Mejora: Detecta 1,382 de 1,627 clientes que se van. Es un 80% mejor que el baseline.
+- Mejora: detecta 1,382 de 1,627 clientes que se van, bastante más que el baseline.
 
 ### Variables que más importan
 
@@ -104,11 +103,11 @@ Los árboles manejan mejor las categorías y el desbalance.
 2. **Total_Trans_Ct** (0.16): Cuántas transacciones hace
 3. **Months_Inactive_12_mon** (0.12): Meses sin actividad en el último año
 
-El mensaje es claro: lo que importa es el comportamiento transaccional, no si es hombre/mujer o cuánto gana.
+La lectura final fue bastante clara: pesa más el comportamiento transaccional que variables como género o ingreso.
 
 ## Validación
 
-No hay overfitting. Train accuracy = Test accuracy = 96%.
+No vimos señales de overfitting: train accuracy y test accuracy quedaron en 96%.
 
 Lo que el modelo se equivoca:
 - ~1,382 churn detectados correctamente
@@ -117,7 +116,7 @@ Lo que el modelo se equivoca:
 
 ## Qué funciona y qué no
 
-El modelo detecta bien quién se va. Una mejora del 80% respecto del baseline.
+El modelo detecta bastante bien quién se va y mejora claramente frente al baseline.
 
 ¿Limitaciones? Sí:
 - El 15% de clientes que se van, no los atrapa (falsos negativos).
@@ -126,7 +125,7 @@ El modelo detecta bien quién se va. Una mejora del 80% respecto del baseline.
 
 ## Código y datos
 
-Se usó:
+Se trabajó con:
 - Python con pandas, numpy, scikit-learn, lightgbm
 - scipy.stats y statsmodels para las pruebas estadísticas
 - matplotlib y seaborn para gráficos
@@ -136,21 +135,56 @@ Archivos generados:
 - `y_train.csv`, `y_test.csv` (targets)
 - Modelos entrenados en formato pkl
 
-## Cómo replicar esto
+## Cómo replicar el proyecto
 
-1. `.\.venv\Scripts\Activate.ps1` (activar entorno)
-2. `pip install -r requirements.txt`
-3. Ejecutar los notebooks en orden:
-   - `01_Data_Understanding.ipynb`: Cómo se ven los datos
-   - `02_Statistical_Analysis.ipynb`: Pruebas para confirmar diferencias
-   - `03_Preprocessing.ipynb`: Limpiar y preparar
-   - `04_Modeling.ipynb`: Entrenar y evaluar modelos
+### 1. Clonar el repositorio
 
-## Cómo usar el dashboard
+```powershell
+git clone <URL-del-repositorio>
+cd bank-customer-churn-prediction
+```
+
+Si ya tienes la carpeta descargada, entra directo al proyecto con `cd`.
+
+### 2. Crear y activar el entorno virtual
+
+```powershell
+python -m venv venv_clean
+.\venv_clean\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+```
+
+Si PowerShell bloquea la activación, ejecuta antes:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+```
+
+### 3. Instalar dependencias
+
+```powershell
+pip install -r requirements.txt
+```
+
+### 4. Ejecutar el proceso completo
+
+Si quieres generar de nuevo los datos procesados y los modelos, corre:
+
+```powershell
+python src/main.py
+```
+
+### 5. Abrir el dashboard
+
+Cuando ya existan los archivos en `data/processed/` y `models/`, abre la app con:
 
 ```powershell
 streamlit run src/dashboard.py
 ```
+
+El dashboard se abre en `http://localhost:8501`.
+
+## Cómo usar el dashboard
 
 El panel se organiza en estas secciones:
 
@@ -161,8 +195,8 @@ El panel se organiza en estas secciones:
 - Qué tan bien funciona el modelo: comparación entre regresión logística y LightGBM.
 - Simular un cliente: evaluación de un caso concreto y lectura del riesgo estimado.
 
-Para presentarlo, conviene empezar por el problema, mostrar los patrones de comportamiento, explicar la comparación de modelos y cerrar con un caso práctico.
+Para presentarlo, conviene empezar por el problema, seguir con los patrones de comportamiento, comparar modelos y cerrar con un caso práctico.
 
 ## Resumen del panel
 
-El panel resume el problema, la exploración de datos, la comparación de modelos y la simulación de casos concretos.
+En pocas palabras, el panel resume el problema, la exploración de datos, la comparación de modelos y la simulación de casos concretos.
